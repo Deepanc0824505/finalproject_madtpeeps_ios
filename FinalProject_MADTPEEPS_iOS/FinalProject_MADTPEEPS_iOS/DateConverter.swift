@@ -23,3 +23,14 @@ extension Date {
         return orderDateString
     }
 }
+
+extension String {
+    func toDate(dateFormat: String = "yyyy-MM-dd HH:mm:ss'.000Z'") -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = dateFormat
+        let date = dateFormatter.date(from: self)
+        return date
+    }
+}
+
