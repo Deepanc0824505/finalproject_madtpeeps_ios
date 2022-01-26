@@ -22,7 +22,7 @@ open class ImagePicker: NSObject {
 
         self.presentationController = presentationController
     
-//        self.pickerController.delegate = self
+        self.pickerController.delegate = self
         self.pickerController.allowsEditing = true
         self.pickerController.mediaTypes = ["public.image"]
     }
@@ -69,4 +69,24 @@ open class ImagePicker: NSObject {
         self.presentationController?.present(alertController, animated: true)
     }
 
+}
+
+extension ImagePicker: UIImagePickerControllerDelegate {
+    
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let image = info[.editedImage] as? UIImage else {
+            return
+        }
+        completion?(image)
+    }
+    
+}
+
+extension ImagePicker: UINavigationControllerDelegate {
+    
 }
