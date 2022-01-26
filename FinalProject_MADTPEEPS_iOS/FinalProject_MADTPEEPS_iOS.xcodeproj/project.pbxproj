@@ -15,6 +15,7 @@
 		B35417F327A209ED00E0FDDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35417F127A209ED00E0FDDD /* LaunchScreen.storyboard */; };
 		B35417FD27A2139300E0FDDD /* madtpeepstask.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B35417FB27A2139300E0FDDD /* madtpeepstask.xcdatamodeld */; };
 		B35417FF27A2161A00E0FDDD /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35417FE27A2161A00E0FDDD /* ImagePicker.swift */; };
+		B354180127A216E500E0FDDD /* DateConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B354180027A216E500E0FDDD /* DateConverter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		B35417F427A209ED00E0FDDD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B35417FC27A2139300E0FDDD /* madtpeepstask.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = madtpeepstask.xcdatamodel; sourceTree = "<group>"; };
 		B35417FE27A2161A00E0FDDD /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		B354180027A216E500E0FDDD /* DateConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateConverter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				B35417F127A209ED00E0FDDD /* LaunchScreen.storyboard */,
 				B35417F427A209ED00E0FDDD /* Info.plist */,
 				B35417FE27A2161A00E0FDDD /* ImagePicker.swift */,
+				B354180027A216E500E0FDDD /* DateConverter.swift */,
 			);
 			path = FinalProject_MADTPEEPS_iOS;
 			sourceTree = "<group>";
@@ -154,6 +157,7 @@
 			files = (
 				B35417FD27A2139300E0FDDD /* madtpeepstask.xcdatamodeld in Sources */,
 				B35417EB27A209EC00E0FDDD /* ViewController.swift in Sources */,
+				B354180127A216E500E0FDDD /* DateConverter.swift in Sources */,
 				B35417FF27A2161A00E0FDDD /* ImagePicker.swift in Sources */,
 				B35417E727A209EC00E0FDDD /* AppDelegate.swift in Sources */,
 				B35417E927A209EC00E0FDDD /* SceneDelegate.swift in Sources */,
