@@ -13,6 +13,7 @@
 		B35417EE27A209EC00E0FDDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35417EC27A209EC00E0FDDD /* Main.storyboard */; };
 		B35417F027A209ED00E0FDDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B35417EF27A209ED00E0FDDD /* Assets.xcassets */; };
 		B35417F327A209ED00E0FDDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35417F127A209ED00E0FDDD /* LaunchScreen.storyboard */; };
+		B35417FD27A2139300E0FDDD /* madtpeepstask.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B35417FB27A2139300E0FDDD /* madtpeepstask.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		B35417EF27A209ED00E0FDDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B35417F227A209ED00E0FDDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B35417F427A209ED00E0FDDD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B35417FC27A2139300E0FDDD /* madtpeepstask.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = madtpeepstask.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		B35417E527A209EC00E0FDDD /* FinalProject_MADTPEEPS_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B35417FA27A2134900E0FDDD /* Model */,
 				B35417E627A209EC00E0FDDD /* AppDelegate.swift */,
 				B35417E827A209EC00E0FDDD /* SceneDelegate.swift */,
 				B35417EA27A209EC00E0FDDD /* ViewController.swift */,
@@ -65,6 +68,14 @@
 				B35417F427A209ED00E0FDDD /* Info.plist */,
 			);
 			path = FinalProject_MADTPEEPS_iOS;
+			sourceTree = "<group>";
+		};
+		B35417FA27A2134900E0FDDD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B35417FB27A2139300E0FDDD /* madtpeepstask.xcdatamodeld */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +149,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B35417FD27A2139300E0FDDD /* madtpeepstask.xcdatamodeld in Sources */,
 				B35417EB27A209EC00E0FDDD /* ViewController.swift in Sources */,
 				B35417E727A209EC00E0FDDD /* AppDelegate.swift in Sources */,
 				B35417E927A209EC00E0FDDD /* SceneDelegate.swift in Sources */,
@@ -358,6 +370,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		B35417FB27A2139300E0FDDD /* madtpeepstask.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				B35417FC27A2139300E0FDDD /* madtpeepstask.xcdatamodel */,
+			);
+			currentVersion = B35417FC27A2139300E0FDDD /* madtpeepstask.xcdatamodel */;
+			path = madtpeepstask.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = B35417DB27A209EC00E0FDDD /* Project object */;
 }
