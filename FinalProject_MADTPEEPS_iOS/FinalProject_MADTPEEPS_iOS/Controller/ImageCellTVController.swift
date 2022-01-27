@@ -11,10 +11,42 @@ class ImageCellTVController: UICollectionViewCell {
     
     @IBOutlet weak var btnDel: UIButton!
     @IBOutlet weak var ivTask: UIImageView!
-
-
-    @IBAction func deleteHandler(_ sender: UIButton) {
+    
+    var deleteButtonTapped:(()->())?
+    var image:Data! {
+        didSet {
+            setData()
+        }
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        initUiView()
+    }
+    
+    func initView() {
+        ivTask.image = UIImage(systemName: "plus")
+        ivTask.contentMode = .center
+        btnDel.isHidden = true
+    }
+    
+    func initUiView() {
+        ivTask.layer.cornerRadius = 10
+        ivTask.layer.masksToBounds = true
         
+        btnDel.layer.cornerRadius = btnDel.frame.height/2
+        btnDel.layer.masksToBounds = true
+    }
+    
+    func setData() {
+        ivTask.image = UIImage(data: image)
+        ivTask.contentMode = .scaleAspectFill
+    }
+    
+    
+    
+    @IBAction func deleteHandler(_ sender: UIButton) {
+        self.deleteButtonTapped?()
     }
         
 }
