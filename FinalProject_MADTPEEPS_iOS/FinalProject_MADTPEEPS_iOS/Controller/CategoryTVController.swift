@@ -4,7 +4,6 @@
 //
 //  Created by MADT Peeps on 2022-01-27.
 //
-
 import Foundation
 import CoreData
 import UIKit
@@ -91,6 +90,11 @@ class CategoryTVController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
+            deleteCategory(category:  categories[indexPath.row])
+            saveCategory()
+            categories.remove(at: indexPath.row)
+            // Delete the row from the data source
+            tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             
         }
@@ -120,4 +124,9 @@ class CategoryTVController: UITableViewController {
             print("Error saving the category \(error.localizedDescription)")
         }
     }
+    
+    func deleteCategory(category: Category) {
+        context.delete(category)
+    }
+    
 }
