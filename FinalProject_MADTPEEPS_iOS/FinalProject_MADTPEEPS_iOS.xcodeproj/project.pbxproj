@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B33B243027A317AA00FC0A13 /* CategoryTVController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33B242F27A317AA00FC0A13 /* CategoryTVController.swift */; };
+		B33B243227A31DFB00FC0A13 /* TaskTVController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33B243127A31DFB00FC0A13 /* TaskTVController.swift */; };
+		B33B243427A323A400FC0A13 /* AddTaskController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33B243327A323A400FC0A13 /* AddTaskController.swift */; };
+		B33B243627A337CC00FC0A13 /* ImageCellTVController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33B243527A337CC00FC0A13 /* ImageCellTVController.swift */; };
 		B35417E727A209EC00E0FDDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35417E627A209EC00E0FDDD /* AppDelegate.swift */; };
 		B35417E927A209EC00E0FDDD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35417E827A209EC00E0FDDD /* SceneDelegate.swift */; };
-		B35417EB27A209EC00E0FDDD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35417EA27A209EC00E0FDDD /* ViewController.swift */; };
 		B35417EE27A209EC00E0FDDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35417EC27A209EC00E0FDDD /* Main.storyboard */; };
 		B35417F027A209ED00E0FDDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B35417EF27A209ED00E0FDDD /* Assets.xcassets */; };
 		B35417F327A209ED00E0FDDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B35417F127A209ED00E0FDDD /* LaunchScreen.storyboard */; };
@@ -19,10 +22,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B33B242F27A317AA00FC0A13 /* CategoryTVController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTVController.swift; sourceTree = "<group>"; };
+		B33B243127A31DFB00FC0A13 /* TaskTVController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTVController.swift; sourceTree = "<group>"; };
+		B33B243327A323A400FC0A13 /* AddTaskController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskController.swift; sourceTree = "<group>"; };
+		B33B243527A337CC00FC0A13 /* ImageCellTVController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCellTVController.swift; sourceTree = "<group>"; };
 		B35417E327A209EC00E0FDDD /* FinalProject_MADTPEEPS_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinalProject_MADTPEEPS_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B35417E627A209EC00E0FDDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B35417E827A209EC00E0FDDD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		B35417EA27A209EC00E0FDDD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B35417ED27A209EC00E0FDDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B35417EF27A209ED00E0FDDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B35417F227A209ED00E0FDDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -54,6 +60,10 @@
 		B33B242E27A315DC00FC0A13 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				B33B242F27A317AA00FC0A13 /* CategoryTVController.swift */,
+				B33B243127A31DFB00FC0A13 /* TaskTVController.swift */,
+				B33B243327A323A400FC0A13 /* AddTaskController.swift */,
+				B33B243527A337CC00FC0A13 /* ImageCellTVController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -82,7 +92,6 @@
 				B35417FA27A2134900E0FDDD /* Model */,
 				B35417E627A209EC00E0FDDD /* AppDelegate.swift */,
 				B35417E827A209EC00E0FDDD /* SceneDelegate.swift */,
-				B35417EA27A209EC00E0FDDD /* ViewController.swift */,
 				B35417EF27A209ED00E0FDDD /* Assets.xcassets */,
 				B35417F127A209ED00E0FDDD /* LaunchScreen.storyboard */,
 				B35417F427A209ED00E0FDDD /* Info.plist */,
@@ -172,11 +181,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B35417FD27A2139300E0FDDD /* madtpeepstask.xcdatamodeld in Sources */,
-				B35417EB27A209EC00E0FDDD /* ViewController.swift in Sources */,
+				B33B243427A323A400FC0A13 /* AddTaskController.swift in Sources */,
+				B33B243627A337CC00FC0A13 /* ImageCellTVController.swift in Sources */,
+				B33B243227A31DFB00FC0A13 /* TaskTVController.swift in Sources */,
 				B354180127A216E500E0FDDD /* DateConverter.swift in Sources */,
 				B35417FF27A2161A00E0FDDD /* ImagePicker.swift in Sources */,
 				B35417E727A209EC00E0FDDD /* AppDelegate.swift in Sources */,
 				B35417E927A209EC00E0FDDD /* SceneDelegate.swift in Sources */,
+				B33B243027A317AA00FC0A13 /* CategoryTVController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -45,7 +45,6 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     // edit mode by default is false
     var editMode: Bool = false
     
-    // an in instance of the noteTVC in noteVC - delegate
     weak var delegate: TaskTVController?
     
     
@@ -186,6 +185,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     @IBAction func recordingHandler(_ sender: UIButton) {
+        
         if(isRecording) {
             finishAudioRecording(success: true)
             btnRecord.setImage(UIImage(systemName: "circle.fill"), for: .normal)
@@ -324,7 +324,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
                 audioRecorder.isMeteringEnabled = true
                 audioRecorder.prepareToRecord()
             }
-            catch let _ {
+            catch _ {
               print("Error while playing audio")
             }
         }

@@ -9,13 +9,11 @@ import UIKit
 import CoreData
 
 class TaskTVController: UITableViewController {
+    // create task
     var tasks = [Task]()
-    var sortByDate = false
-    var sortByName = false
-    var predicate:NSPredicate? = nil
     var selectedCategory : Category? {
         didSet {
-            loadTasks()
+            loadTasks(sortByDate: false, sortByTitle: false)
         }
     }
     
@@ -40,21 +38,15 @@ class TaskTVController: UITableViewController {
         super.viewWillAppear(animated)
         self.tasks.removeAll()
         self.tableView.reloadData()
-        sortByDate = true
-        sortByName = true
-        loadTasks()
+        loadTasks(sortByDate: true, sortByTitle: true)
     }
     
     @IBAction func buttonSortByDate(_ sender: UIBarButtonItem) {
-        sortByDate = true
-        sortByName = false
-        loadTasks()
+        loadTasks(sortByDate: true, sortByTitle: false)
     }
     
     @IBAction func buttonAtoZ(_ sender: UIBarButtonItem) {
-        sortByDate = false
-        sortByName = true
-        loadTasks()
+        loadTasks(sortByDate: false, sortByTitle: true)
     }
     
     // MARK: - Table view data source
@@ -107,14 +99,14 @@ class TaskTVController: UITableViewController {
             task.isCompleted = true
             self.editTask(currenttask: task)
             self.saveTasks()
-            self.loadTasks()
+            self.loadTasks(sortByDate: false, sortByTitle: false)
 
         }
         
         let actDelete = UIAlertAction.init(title: "Delete", style: .destructive) { UIAlertAction in
             self.deleteTask(task: task)
             self.saveTasks()
-            self.loadTasks()
+            self.loadTasks(sortByDate: false, sortByTitle: false)
 
         }
         
@@ -122,7 +114,7 @@ class TaskTVController: UITableViewController {
             task.isCompleted = false
             self.editTask(currenttask: task)
             self.saveTasks()
-            self.loadTasks()
+            self.loadTasks(sortByDate: false, sortByTitle: false)
         }
         
         let actEdit = UIAlertAction.init(title: "Edit", style: .default) { UIAlertAction in
@@ -185,10 +177,8 @@ class TaskTVController: UITableViewController {
         newTask.taskStartDate = currentDate
         newTask.category = selectedCategory
         newTask.isCompleted = isCompleted
-        sortByName = false
-        sortByDate = false
         saveTasks()
-        loadTasks()
+        loadTasks(sortByDate: false, sortByTitle: false)
     
 
     }
@@ -198,12 +188,7 @@ class TaskTVController: UITableViewController {
         let request: NSFetchRequest<Task> = Task.fetchRequest()
         let folderPredicate = NSPredicate(format: "taskId=%@", currenttask.taskId!)
 
-        
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [folderPredicate, additionalPredicate])
-        } else {
-            request.predicate = folderPredicate
-        }
+        request.predicate = folderPredicate
     
         do {
             tasks = try context.fetch(request)
@@ -222,10 +207,8 @@ class TaskTVController: UITableViewController {
             print("Error loading tasks \(error.localizedDescription)")
         }
         
-        sortByName = false
-        sortByDate = false
         saveTasks()
-        loadTasks()
+        loadTasks(sortByDate: false, sortByTitle: false)
     
 
     }
@@ -262,11 +245,11 @@ class TaskTVController: UITableViewController {
     
     /// load tasks deom core data
     /// - Parameter predicate: parameter comming from search bar - by default is nil
-    private func loadTasks() {
+    private func loadTasks(predicate: NSPredicate? = nil , sortByDate :Bool, sortByTitle :Bool ) {
         let request: NSFetchRequest<Task> = Task.fetchRequest()
         let folderPredicate = NSPredicate(format: "category.catName=%@", selectedCategory!.catName!)
         
-        if(sortByName){
+        if(sortByTitle){
             request.sortDescriptors = [NSSortDescriptor(key: "taskTitle", ascending: true)]
         }
         if(sortByDate){
@@ -288,7 +271,6 @@ class TaskTVController: UITableViewController {
         }
         
         tableView.reloadData()
-        predicate = nil
     }
 }
     
@@ -300,10 +282,8 @@ extension TaskTVController: UISearchBarDelegate {
     /// - Parameter searchBar: search bar is passed to this function
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         // add predicate
-        predicate = NSPredicate(format: "taskTitle CONTAINS[cd] %@", searchBar.text!.capitalized)
-        sortByDate = false
-        sortByName = false
-        loadTasks()
+        let predicate = NSPredicate(format: "taskTitle CONTAINS[cd] %@", searchBar.text!.capitalized)
+        loadTasks(predicate: predicate,sortByDate: false, sortByTitle: false)
     }
     
     /// when the text in text bar is changed
@@ -312,9 +292,7 @@ extension TaskTVController: UISearchBarDelegate {
     ///   - searchText: the text that is written in the search bar
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
-            sortByName = false
-            sortByDate = false
-            loadTasks()
+            loadTasks(sortByDate: false, sortByTitle: false)
             
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
@@ -336,7 +314,5 @@ extension TaskTVController: UISearchBarDelegate {
                 }
             }
         }
-
     }
-    
 }
