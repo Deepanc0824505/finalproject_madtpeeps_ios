@@ -133,12 +133,22 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     
     @IBAction func addAudio(_ sender: UIButton) {
         if !tftaskTitle.text!.isEmpty {
+            checkRecordPermission()
             audioLayout.isHidden = sender != btnAudioAdd
             btnAudioAdd.isHidden = sender == btnAudioAdd
             btnSaveAudio.isHidden = sender == btnAudioAdd
             if sender == btnCancelAudio {
                 btnSaveAudio.isHidden = true
                 btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                if isRecording {
+                    audioRecorder.stop()
+                   // lblTimeAudio.text = "Tap + to play recorded audio"
+                   // btnAudioAdd.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                }
+                
+                if isPlaying {
+                    audioPlayer.stop()
+                }
             }
         } else {
             self.alert(message: "Title is required", title: "Alert", okAction: nil)
@@ -174,7 +184,34 @@ extension AddTaskController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-       
+        let cell: ImageCellTVController = collectionView.dequeueCell(for: indexPath)
+        
+        if images.count != indexPath.row {
+            //not a last index
+            cell.image = images[indexPath.row]
+            cell.btnDel.isHidden = false
+            cell.deleteButtonTapped = {
+                let deleteActionSheetController = UIAlertController(title: "Alert", message: "Are you sure you want to delete?", preferredStyle: .alert)
+                let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { (_) in
+                    self.images.remove(at: indexPath.row)
+                    self.reloadCollectionView()
+                }
+                
+                
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action -> Void in
+                    
+                }
+                
+                deleteActionSheetController.addAction(deleteAction)
+                deleteActionSheetController.addAction(cancelAction)
+                
+                self.present(deleteActionSheetController, animated: true, completion: nil)
+            }
+        } else {
+            // last index add button should be shown
+            cell.initView()
+        }
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
