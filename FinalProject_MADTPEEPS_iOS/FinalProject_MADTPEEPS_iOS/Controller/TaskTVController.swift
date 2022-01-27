@@ -96,7 +96,44 @@ class TaskTVController: UITableViewController {
     
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let task = tasks[indexPath.row]
+
+        let alertController = UIAlertController.init(title: "Task Operation", message: "Please select task action", preferredStyle: .actionSheet)
         
+        let actComplete = UIAlertAction.init(title: "Mark as complete", style: .default) { UIAlertAction in
+            task.isCompleted = true
+
+        }
+        
+        let actDelete = UIAlertAction.init(title: "Delete", style: .destructive) { UIAlertAction in
+            self.deleteTask(task: task)
+            self.saveTasks()
+            self.loadTasks()
+
+        }
+        
+        let actIncomplete = UIAlertAction.init(title: "Mark as incomplete", style: .default) { UIAlertAction in
+            task.isCompleted = false
+        }
+        
+        let actEdit = UIAlertAction.init(title: "Edit", style: .default) { UIAlertAction in
+        
+        }
+        
+        
+        let actDismiss = UIAlertAction.init(title: "Cancel", style: .cancel) { UIAlertAction in
+            if let selectedIndexPaths = tableView.indexPathsForSelectedRows {
+                  for indexPath in selectedIndexPaths {
+                        tableView.deselectRow(at: indexPath, animated: true)
+                  }
+             }
+        }
+        alertController.addAction(actEdit)
+        alertController.addAction(actComplete)
+        alertController.addAction(actIncomplete)
+        alertController.addAction(actDelete)
+        alertController.addAction(actDismiss)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     
