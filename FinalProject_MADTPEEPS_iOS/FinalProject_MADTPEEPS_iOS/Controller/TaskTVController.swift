@@ -126,7 +126,10 @@ class TaskTVController: UITableViewController {
         }
         
         let actEdit = UIAlertAction.init(title: "Edit", style: .default) { UIAlertAction in
-        
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "AddTaskController") as! AddTaskController
+            vc.task = task
+            vc.delegate = self
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         
         
