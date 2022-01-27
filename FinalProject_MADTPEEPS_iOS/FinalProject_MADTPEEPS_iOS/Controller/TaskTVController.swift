@@ -322,4 +322,21 @@ extension TaskTVController: UISearchBarDelegate {
         }
     }
     
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+        
+        if let destination = segue.destination as? AddTaskController {
+            destination.delegate = self
+            if let cell = sender as? UITableViewCell {
+                if let index = tableView.indexPath(for: cell)?.row {
+                    destination.selectedTask = tasks[index]
+                }
+            }
+        }
+
+    }
+    
 }
