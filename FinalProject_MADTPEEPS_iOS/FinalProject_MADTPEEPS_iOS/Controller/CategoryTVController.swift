@@ -24,6 +24,12 @@ class CategoryTVController: UITableViewController {
         tableView.addGestureRecognizer(longPress)
         loadCategories()
     }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.reloadData()
+    }
 
    @IBAction func addCategoriesClick(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -175,5 +181,6 @@ class CategoryTVController: UITableViewController {
             print("Error loading tasks \(error.localizedDescription)")
         }
     }
+
 
 }
