@@ -20,9 +20,10 @@ class CategoryTVController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPress)
         loadCategories()
     }
-    
 
    @IBAction func addCategoriesClick(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -100,6 +101,35 @@ class CategoryTVController: UITableViewController {
         }
     }
     
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let touchPoint = sender.location(in: tableView)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                // your code here, get the row for the indexPath or do whatever you want
+                let title = categories[indexPath.row].catName
+                var textField = UITextField()
+                let alert = UIAlertController(title: "Edit Category", message: "Enter a Category Name", preferredStyle: .alert)
+                let addAction = UIAlertAction(title: "Update", style: .default) { (action) in
+                    let categoryNames = self.categories.map {$0.catName?.lowercased()}
+                    guard !categoryNames.contains(textField.text?.lowercased()) else {self.showAlert(); return}
+                    self.categories[indexPath.row].catName = textField.text!
+                    self.editCategory(category: self.categories[indexPath.row], title:title!)
+                }
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                // change the color of the cancel button action
+                cancelAction.setValue(UIColor.orange, forKey: "titleTextColor")
+                
+                alert.addAction(addAction)
+                alert.addAction(cancelAction)
+                alert.addTextField { (field) in
+                    textField = field
+                    textField.text = title
+                }
+                
+                present(alert, animated: true, completion: nil)
+            }
+        }
+    }
     
     //MARK: - core data interaction methods
     
@@ -129,4 +159,21 @@ class CategoryTVController: UITableViewController {
         context.delete(category)
     }
     
+    func editCategory(category: Category, title:String) {
+        let request: NSFetchRequest<Category> = Category.fetchRequest()
+        let folderPredicate = NSPredicate(format: "catName=%@", title)
+        request.predicate = folderPredicate
+        do {
+            categories = try context.fetch(request)
+            if(categories.count > 0){
+                let category1 = categories[0]
+                category1.catName = category.catName
+            }
+            saveCategory()
+            loadCategories()
+        } catch {
+            print("Error loading tasks \(error.localizedDescription)")
+        }
+    }
+
 }
