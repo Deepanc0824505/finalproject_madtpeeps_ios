@@ -51,6 +51,13 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		B33B242E27A315DC00FC0A13 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		B35417DA27A209EC00E0FDDD = {
 			isa = PBXGroup;
 			children = (
@@ -70,6 +77,7 @@
 		B35417E527A209EC00E0FDDD /* FinalProject_MADTPEEPS_iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B33B242E27A315DC00FC0A13 /* Controller */,
 				B33B242D27A3147200FC0A13 /* View */,
 				B35417FA27A2134900E0FDDD /* Model */,
 				B35417E627A209EC00E0FDDD /* AppDelegate.swift */,
