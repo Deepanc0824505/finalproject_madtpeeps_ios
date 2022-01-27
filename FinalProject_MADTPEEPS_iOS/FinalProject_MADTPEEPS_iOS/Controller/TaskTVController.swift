@@ -162,6 +162,30 @@ class TaskTVController: UITableViewController {
         }
     }
     
+    func editTask(title: String, audio: String, dueDate: String, currentDate: String, images: [Data], isCompleted:Bool) {
+              
+        tasks = []
+        let newTask = Task(context: context)
+        newTask.taskTitle = title
+        let now = Date()
+          let formatter = DateFormatter()
+          formatter.timeZone = TimeZone.current
+          formatter.dateFormat = "yyyyMMddHHmmss"
+        let dateString = formatter.string(from: now)
+        newTask.taskId = dateString
+        newTask.taskAudio = audio
+        newTask.taskImages = images
+        newTask.taskEndDate = dueDate
+        newTask.taskStartDate = currentDate
+        newTask.category = selectedCategory
+        newTask.isCompleted = isCompleted
+        sortByName = false
+        sortByDate = false
+        saveTasks()
+        loadTasks()
+    
+
+    }
     /// Update tasks from context
 
     func editTask(currenttask : Task ) {
