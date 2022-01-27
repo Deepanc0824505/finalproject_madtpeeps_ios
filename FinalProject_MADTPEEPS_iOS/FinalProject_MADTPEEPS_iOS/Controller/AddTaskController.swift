@@ -27,6 +27,14 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     @IBOutlet weak var lblAudioName: UILabel!
     @IBOutlet weak var norecordingLayout: UIStackView!
     
+    var audioRecorder: AVAudioRecorder!
+    var audioPlayer : AVAudioPlayer!
+    var meterTimer:Timer!
+    var isAudioRecordingGranted: Bool!
+    var isRecording = false
+    var isPlaying = false
+    var recordingUrl:URL!;
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var selectedTask: Task? {
         didSet {
@@ -49,6 +57,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     
     var images: [Data] = []
     var imagePicker: ImagePicker?
+    
     var audio = [String]()
     
     override func viewDidLoad() {
@@ -87,6 +96,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
                  } else {
                      print("FILE NOT AVAILABLE")
                  }
+                recordingUrl =  URL(fileURLWithPath:filePath)
                 btnAudioAdd.isHidden = true
                 audioViewLayout.isHidden = false
                 if lblAudioName.text == "No Recorded File" {
@@ -119,6 +129,25 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         guard let title = tftaskTitle.text, !title.isEmpty else {
             self.alert(message: "Title is required", title: "Alert", okAction: nil)
             return
+        }
+        if task == nil {
+            var path = ""
+            if(recordingUrl != nil){
+                path = recordingUrl.path
+            }
+            delegate!.editTask(title: title, audio: path, dueDate: "\(datePicker.date)", currentDate: "\(Date())", images: images, isCompleted: false)
+        } else {
+            task.taskTitle = title
+            if(recordingUrl != nil){
+                task.taskAudio = recordingUrl.path
+            } else {
+                task.taskAudio = ""
+            }
+            task.taskImages = images
+            task.taskEndDate = "\(datePicker.date)"
+            task.taskStartDate = "\(Date())"
+            task.isCompleted = false
+            delegate?.editTask(currenttask: task)
         }
         self.navigationController?.popViewController(animated: true)
     }
@@ -157,7 +186,8 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     @IBAction func recordingHandler(_ sender: UIButton) {
-       
+        
+        
     }
     
     @IBAction func saveAudio(_ sender: UIButton) {
@@ -167,13 +197,197 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     @IBAction func playAudio(_ sender: UIButton) {
-        
+        if(isPlaying)
+        {
+            audioPlayer.stop()
+            btnRecord.isEnabled = true
+            btnSaveAudio.isEnabled = true
+            btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
+            btnPlaySaveAudio.setImage(UIImage(systemName: "play.fill"), for: .normal)
+            isPlaying = false
+        }
+        else
+        {
+            
+          
+            
+            if FileManager.default.fileExists(atPath: recordingUrl.path)
+            {
+                btnRecord.isEnabled = false
+                btnSaveAudio.isEnabled = false
+                btnPlay.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+                btnPlaySaveAudio.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+                preparePlay()
+                audioPlayer.play()
+                isPlaying = true
+            }
+            else
+            {
+                display_alert(msg_title: "Error", msg_desc: "Audio file is missing.", action_title: "OK")
+            }
+        }
     }
     
     @IBAction func deleteAudio(_ sender: UIButton) {
+        recordingUrl = nil;
+        btnAudioAdd.isHidden = false
         
+        
+        UIView.animate(withDuration: 0.25) {
+            self.audioViewLayout.isHidden = true
+        }
     }
+    
+    // MARK: Audio Methods
+    func checkRecordPermission()
+    {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted:
+            isAudioRecordingGranted = true
+            break
+        case .denied:
+            isAudioRecordingGranted = false
+            break
+        case .undetermined:
+            AVAudioSession.sharedInstance().requestRecordPermission({ (allowed) in
+                if allowed {
+                    self.isAudioRecordingGranted = true
+                } else {
+                    self.isAudioRecordingGranted = false
+                }
+            })
+            break
+        default:
+            break
+        }
+    }
+    
+    func getDocumentsDirectory() -> URL
+    {
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//        let documentsDirectory = paths[0]
+        return documentsUrl
+    }
+    
+    func getFileUrl() -> URL
+    {
+        let now = Date()
+          let formatter = DateFormatter()
+          formatter.timeZone = TimeZone.current
+          formatter.dateFormat = "yyyyMMddHHmmss"
 
+          let dateString = formatter.string(from: now)
+        let filename = dateString + ".m4a"
+        let filePath = getDocumentsDirectory().appendingPathComponent(filename)
+        lblAudioName.text = filename
+        return filePath
+    }
+    
+    func setupRecorder()
+    {
+        if isAudioRecordingGranted
+        {
+            let session = AVAudioSession.sharedInstance()
+            do
+            {
+                try session.setCategory(AVAudioSession.Category.playAndRecord, options: .defaultToSpeaker)
+                try session.setActive(true)
+                let settings = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 44100,
+                    AVNumberOfChannelsKey: 2,
+                    AVEncoderAudioQualityKey:AVAudioQuality.high.rawValue
+                ]
+                recordingUrl = getFileUrl()
+                audioRecorder = try AVAudioRecorder(url: recordingUrl, settings: settings)
+                audioRecorder.delegate = self
+                audioRecorder.isMeteringEnabled = true
+                audioRecorder.prepareToRecord()
+            }
+            catch let _ {
+              print("Error while playing audio")
+            }
+        }
+        else
+        {
+            print("audio permission not granted")
+        }
+    }
+    
+    @objc func updateAudioMeter(timer: Timer)
+    {
+        if audioRecorder.isRecording
+        {
+            let hr = Int((audioRecorder.currentTime / 60) / 60)
+            let min = Int(audioRecorder.currentTime / 60)
+            let sec = Int(audioRecorder.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
+            lblTimeAudio.text = totalTimeString
+//            btnRecord.setTitle(totalTimeString, for: .normal)
+            audioRecorder.updateMeters()
+        }
+    }
+    
+    func finishAudioRecording(success: Bool)
+    {
+        if success
+        {
+            audioRecorder.stop()
+            audioRecorder = nil
+            meterTimer.invalidate()
+            print("recorded successfully.")
+            lblTimeAudio.text = "Audio Recorded"
+
+        }
+        else
+        {
+           print("Audio Error")
+        }
+    }
+    
+    func preparePlay()
+    {
+        do
+        {
+            audioPlayer = try AVAudioPlayer(contentsOf: recordingUrl)
+            audioPlayer.delegate = self
+            audioPlayer.prepareToPlay()
+        }
+        catch{
+            print("Error")
+        }
+    }
+    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool)
+    {
+        if !flag
+        {
+            finishAudioRecording(success: false)
+        }
+        btnPlay.isEnabled = true
+        btnSaveAudio.isEnabled = true
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool)
+    {
+        btnRecord.isEnabled = true
+        btnSaveAudio.isEnabled = true
+        btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        btnPlaySaveAudio.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        isPlaying = false
+    }
+    
+    func display_alert(msg_title : String , msg_desc : String ,action_title : String)
+    {
+        let ac = UIAlertController(title: msg_title, message: msg_desc, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: action_title, style: .default)
+                     {
+            (result : UIAlertAction) -> Void in
+            _ = self.navigationController?.popViewController(animated: true)
+        })
+        present(ac, animated: true)
+    }
 }
 
 
