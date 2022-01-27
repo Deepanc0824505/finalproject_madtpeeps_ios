@@ -186,8 +186,27 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     @IBAction func recordingHandler(_ sender: UIButton) {
-        
-        
+        if(isRecording) {
+            finishAudioRecording(success: true)
+            btnRecord.setImage(UIImage(systemName: "circle.fill"), for: .normal)
+            btnRecord.tintColor = .systemRed
+            btnRecord.setTitle("", for: .normal)
+            btnPlay.isEnabled = true
+            isRecording = false
+            btnSaveAudio.isEnabled = true
+            btnSaveAudio.isHidden = false
+        } else {
+            btnRecord.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+            btnRecord.tintColor = .black
+            
+            setupRecorder()
+            
+            audioRecorder.record()
+            meterTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+            btnPlay.isEnabled = false
+            btnSaveAudio.isEnabled = false
+            isRecording = true
+        }
     }
     
     @IBAction func saveAudio(_ sender: UIButton) {
