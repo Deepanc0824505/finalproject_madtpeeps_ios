@@ -102,6 +102,9 @@ class TaskTVController: UITableViewController {
         
         let actComplete = UIAlertAction.init(title: "Mark as complete", style: .default) { UIAlertAction in
             task.isCompleted = true
+            self.editTask(currenttask: task)
+            self.saveTasks()
+            self.loadTasks()
 
         }
         
@@ -114,6 +117,9 @@ class TaskTVController: UITableViewController {
         
         let actIncomplete = UIAlertAction.init(title: "Mark as incomplete", style: .default) { UIAlertAction in
             task.isCompleted = false
+            self.editTask(currenttask: task)
+            self.saveTasks()
+            self.loadTasks()
         }
         
         let actEdit = UIAlertAction.init(title: "Edit", style: .default) { UIAlertAction in
@@ -156,6 +162,43 @@ class TaskTVController: UITableViewController {
         }
     }
     
+    /// Update tasks from context
+
+    func editTask(currenttask : Task ) {
+        let request: NSFetchRequest<Task> = Task.fetchRequest()
+        let folderPredicate = NSPredicate(format: "taskId=%@", currenttask.taskId!)
+
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [folderPredicate, additionalPredicate])
+        } else {
+            request.predicate = folderPredicate
+        }
+    
+        do {
+            tasks = try context.fetch(request)
+            if(tasks.count > 0){
+                let task = tasks[0]
+                task.taskId = currenttask.taskId
+                task.taskAudio = currenttask.taskAudio
+                task.taskImages = currenttask.taskImages
+                task.taskEndDate = currenttask.taskEndDate
+                task.taskStartDate = currenttask.taskStartDate
+                task.category = currenttask.category
+                task.isCompleted = currenttask.isCompleted
+                self.saveTasks()
+            }
+        } catch {
+            print("Error loading tasks \(error.localizedDescription)")
+        }
+        
+        sortByName = false
+        sortByDate = false
+        saveTasks()
+        loadTasks()
+    
+
+    }
     /// delete tasks from context
     /// - Parameter note: note defined in Core Data
     func deleteTask(task: Task) {
