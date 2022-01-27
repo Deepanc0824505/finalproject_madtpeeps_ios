@@ -24,12 +24,15 @@ class TaskTVController: UITableViewController {
     // create the context
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    // define a search controller
+    let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "task_cell")
 
         navigationItem.title = selectedCategory?.catName
+        showSearchBar()
     }
     
     //MARK : - TableView Reload Data After Add Tasks
@@ -239,6 +242,17 @@ class TaskTVController: UITableViewController {
             print("Error saving the tasks \(error.localizedDescription)")
         }
     }
+
+    
+    //MARK: - show search bar func
+    func showSearchBar() {
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Task"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        searchController.searchBar.searchTextField.textColor = .lightGray
+    }
     
     
     //MARK: - Core data interaction functions
@@ -273,4 +287,36 @@ class TaskTVController: UITableViewController {
         tableView.reloadData()
         predicate = nil
     }
+}
+    
+
+
+//MARK: - search bar delegate methods
+extension TaskTVController: UISearchBarDelegate {
+    /// search button on keypad functionality
+    /// - Parameter searchBar: search bar is passed to this function
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // add predicate
+        predicate = NSPredicate(format: "taskTitle CONTAINS[cd] %@", searchBar.text!.capitalized)
+        sortByDate = false
+        sortByName = false
+        loadTasks()
+    }
+    
+    /// when the text in text bar is changed
+    /// - Parameters:
+    ///   - searchBar: search bar is passed to this function
+    ///   - searchText: the text that is written in the search bar
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            sortByName = false
+            sortByDate = false
+            loadTasks()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+    
 }
