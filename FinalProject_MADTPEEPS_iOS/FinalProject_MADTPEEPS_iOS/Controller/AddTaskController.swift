@@ -415,24 +415,7 @@ extension AddTaskController: UICollectionViewDataSource {
         if images.count != indexPath.row {
             //not a last index
             cell.image = images[indexPath.row]
-            cell.btnDel.isHidden = false
-            cell.deleteButtonTapped = {
-                let deleteActionSheetController = UIAlertController(title: "Alert", message: "Are you sure you want to delete?", preferredStyle: .alert)
-                let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { (_) in
-                    self.images.remove(at: indexPath.row)
-                    self.reloadCollectionView()
-                }
-                
-                
-                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action -> Void in
-                    
-                }
-                
-                deleteActionSheetController.addAction(deleteAction)
-                deleteActionSheetController.addAction(cancelAction)
-                
-                self.present(deleteActionSheetController, animated: true, completion: nil)
-            }
+            cell.btnDel.isHidden = true
         } else {
             // last index add button should be shown
             cell.initView()
@@ -451,6 +434,22 @@ extension AddTaskController: UICollectionViewDataSource {
                 self.images.append(imageData)
                 self.reloadCollectionView()
             }
+        } else {
+            let deleteActionSheetController = UIAlertController(title: "Alert", message: "Are you sure you want to delete?", preferredStyle: .alert)
+            let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { (_) in
+                self.images.remove(at: indexPath.row)
+                self.reloadCollectionView()
+            }
+            
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action -> Void in
+                
+            }
+            
+            deleteActionSheetController.addAction(deleteAction)
+            deleteActionSheetController.addAction(cancelAction)
+            
+            self.present(deleteActionSheetController, animated: true, completion: nil)
         }
     }
     
