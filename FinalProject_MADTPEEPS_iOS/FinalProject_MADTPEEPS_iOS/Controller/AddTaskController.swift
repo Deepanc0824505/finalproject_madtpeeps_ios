@@ -11,6 +11,14 @@ import AVFoundation
 
 class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     
+    var audioRecorder: AVAudioRecorder!
+    var audioPlayer : AVAudioPlayer!
+    var audioTimer:Timer!
+    var isPermissionGranted: Bool!
+    var isRecording = false
+    var isPlaying = false
+    var audioPath:URL!;
+    
     @IBOutlet weak var btnSaveAudio: UIButton!
     @IBOutlet weak var btnCancelAudio: UIButton!
     @IBOutlet weak var btnPlay: UIButton!
@@ -27,13 +35,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     @IBOutlet weak var lblAudioName: UILabel!
     @IBOutlet weak var norecordingLayout: UIStackView!
     
-    var audioRecorder: AVAudioRecorder!
-    var audioPlayer : AVAudioPlayer!
-    var meterTimer:Timer!
-    var isAudioRecordingGranted: Bool!
-    var isRecording = false
-    var isPlaying = false
-    var recordingUrl:URL!;
+    
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var selectedTask: Task? {
@@ -64,16 +66,17 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         // Do any additional setup after loading the view.
         audioLayout.isHidden = true
         audioViewLayout.isHidden = true
-        setupCollectionView()
-        setupData()
+        imgListView.dataSource = self
+        imgListView.delegate = self
+        initData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationItem.title = (task != nil ? "Edit" : "Add") + " Task"
+        navigationItem.title = (task != nil ? "Edit" : "Create") + " Task"
     }
     
-    func setupData() {
+    func initData() {
         if task != nil {
             tftaskTitle.text = task!.taskTitle
             self.images = task.taskImages!
@@ -95,7 +98,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
                  } else {
                      print("FILE NOT AVAILABLE")
                  }
-                recordingUrl =  URL(fileURLWithPath:filePath)
+                audioPath =  URL(fileURLWithPath:filePath)
                 btnAudioAdd.isHidden = true
                 audioViewLayout.isHidden = false
                 if lblAudioName.text == "No Recorded File" {
@@ -108,18 +111,12 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         } else {
             btnAdd.setTitle("Create", for: .normal)
             btnAdd.setTitleColor(.black, for: .normal)
-            self.navigationItem.title = "Add"
+            self.navigationItem.title = "Create"
         }
         
         
     }
     
-    func setupCollectionView() {
-        imgListView.dataSource = self
-        imgListView.delegate = self
-    }
-    
-
     func reloadCollectionView() {
         self.imgListView.reloadData()
     }
@@ -131,14 +128,14 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         }
         if task == nil {
             var path = ""
-            if(recordingUrl != nil){
-                path = recordingUrl.path
+            if(audioPath != nil){
+                path = audioPath.path
             }
             delegate!.editTask(title: title, audio: path, dueDate: "\(datePicker.date)", currentDate: "\(Date())", images: images, isCompleted: false)
         } else {
             task.taskTitle = title
-            if(recordingUrl != nil){
-                task.taskAudio = recordingUrl.path
+            if(audioPath != nil){
+                task.taskAudio = audioPath.path
             } else {
                 task.taskAudio = ""
             }
@@ -161,7 +158,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     
     @IBAction func addAudio(_ sender: UIButton) {
         if !tftaskTitle.text!.isEmpty {
-            checkRecordPermission()
+            checkAudioPermission()
             audioLayout.isHidden = sender != btnAudioAdd
             btnAudioAdd.isHidden = sender == btnAudioAdd
             btnSaveAudio.isHidden = sender == btnAudioAdd
@@ -170,8 +167,6 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
                 btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
                 if isRecording {
                     audioRecorder.stop()
-                   // lblTimeAudio.text = "Tap + to play recorded audio"
-                   // btnAudioAdd.setImage(UIImage(systemName: "play.fill"), for: .normal)
                 }
                 
                 if isPlaying {
@@ -199,10 +194,10 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
             btnRecord.setImage(UIImage(systemName: "stop.fill"), for: .normal)
             btnRecord.tintColor = .black
             
-            setupRecorder()
+            initAudioData()
             
             audioRecorder.record()
-            meterTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateAudioMeter(timer:)), userInfo:nil, repeats:true)
+            audioTimer = Timer.scheduledTimer(timeInterval: 0.1, target:self, selector:#selector(self.updateTimer(timer:)), userInfo:nil, repeats:true)
             btnPlay.isEnabled = false
             btnSaveAudio.isEnabled = false
             isRecording = true
@@ -230,7 +225,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
             
           
             
-            if FileManager.default.fileExists(atPath: recordingUrl.path)
+            if FileManager.default.fileExists(atPath: audioPath.path)
             {
                 btnRecord.isEnabled = false
                 btnSaveAudio.isEnabled = false
@@ -248,7 +243,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     @IBAction func deleteAudio(_ sender: UIButton) {
-        recordingUrl = nil;
+        audioPath = nil;
         btnAudioAdd.isHidden = false
         
         
@@ -258,123 +253,26 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
     }
     
     // MARK: Audio Methods
-    func checkRecordPermission()
+    func checkAudioPermission()
     {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
-            isAudioRecordingGranted = true
+            isPermissionGranted = true
             break
         case .denied:
-            isAudioRecordingGranted = false
+            isPermissionGranted = false
             break
         case .undetermined:
             AVAudioSession.sharedInstance().requestRecordPermission({ (allowed) in
                 if allowed {
-                    self.isAudioRecordingGranted = true
+                    self.isPermissionGranted = true
                 } else {
-                    self.isAudioRecordingGranted = false
+                    self.isPermissionGranted = false
                 }
             })
             break
         default:
             break
-        }
-    }
-    
-    func getDocumentsDirectory() -> URL
-    {
-        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-//        let documentsDirectory = paths[0]
-        return documentsUrl
-    }
-    
-    func getFileUrl() -> URL
-    {
-        let now = Date()
-          let formatter = DateFormatter()
-          formatter.timeZone = TimeZone.current
-          formatter.dateFormat = "yyyyMMddHHmmss"
-
-          let dateString = formatter.string(from: now)
-        let filename = dateString + ".m4a"
-        let filePath = getDocumentsDirectory().appendingPathComponent(filename)
-        lblAudioName.text = filename
-        return filePath
-    }
-    
-    func setupRecorder()
-    {
-        if isAudioRecordingGranted
-        {
-            let session = AVAudioSession.sharedInstance()
-            do
-            {
-                try session.setCategory(AVAudioSession.Category.playAndRecord, options: .defaultToSpeaker)
-                try session.setActive(true)
-                let settings = [
-                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                    AVSampleRateKey: 44100,
-                    AVNumberOfChannelsKey: 2,
-                    AVEncoderAudioQualityKey:AVAudioQuality.high.rawValue
-                ]
-                recordingUrl = getFileUrl()
-                audioRecorder = try AVAudioRecorder(url: recordingUrl, settings: settings)
-                audioRecorder.delegate = self
-                audioRecorder.isMeteringEnabled = true
-                audioRecorder.prepareToRecord()
-            }
-            catch _ {
-              print("Error while playing audio")
-            }
-        }
-        else
-        {
-            print("audio permission not granted")
-        }
-    }
-    
-    @objc func updateAudioMeter(timer: Timer)
-    {
-        if audioRecorder.isRecording
-        {
-            let hr = Int((audioRecorder.currentTime / 60) / 60)
-            let min = Int(audioRecorder.currentTime / 60)
-            let sec = Int(audioRecorder.currentTime.truncatingRemainder(dividingBy: 60))
-            let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
-            lblTimeAudio.text = totalTimeString
-//            btnRecord.setTitle(totalTimeString, for: .normal)
-            audioRecorder.updateMeters()
-        }
-    }
-    
-    func finishAudioRecording(success: Bool)
-    {
-        if success
-        {
-            audioRecorder.stop()
-            audioRecorder = nil
-            meterTimer.invalidate()
-            print("recorded successfully.")
-            lblTimeAudio.text = "Audio Recorded"
-
-        }
-        else
-        {
-           print("Audio Error")
-        }
-    }
-    
-    func preparePlay()
-    {
-        do
-        {
-            audioPlayer = try AVAudioPlayer(contentsOf: recordingUrl)
-            audioPlayer.delegate = self
-            audioPlayer.prepareToPlay()
-        }
-        catch{
-            print("Error")
         }
     }
     
@@ -407,6 +305,101 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         })
         present(ac, animated: true)
     }
+    
+    func getDocumentsDirectory() -> URL
+    {
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return documentsUrl
+    }
+    
+    func getFileUrl() -> URL
+    {
+        let now = Date()
+          let formatter = DateFormatter()
+          formatter.timeZone = TimeZone.current
+          formatter.dateFormat = "yyyyMMddHHmmss"
+
+          let dateString = formatter.string(from: now)
+        let filename = dateString + ".m4a"
+        let filePath = getDocumentsDirectory().appendingPathComponent(filename)
+        lblAudioName.text = filename
+        return filePath
+    }
+    
+    func initAudioData()
+    {
+        if isPermissionGranted
+        {
+            let session = AVAudioSession.sharedInstance()
+            do
+            {
+                try session.setCategory(AVAudioSession.Category.playAndRecord, options: .defaultToSpeaker)
+                try session.setActive(true)
+                let settings = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 44100,
+                    AVNumberOfChannelsKey: 2,
+                    AVEncoderAudioQualityKey:AVAudioQuality.high.rawValue
+                ]
+                audioPath = getFileUrl()
+                audioRecorder = try AVAudioRecorder(url: audioPath, settings: settings)
+                audioRecorder.delegate = self
+                audioRecorder.isMeteringEnabled = true
+                audioRecorder.prepareToRecord()
+            }
+            catch _ {
+              print("Error while playing audio")
+            }
+        }
+        else
+        {
+            print("audio permission not granted")
+        }
+    }
+    
+    @objc func updateTimer(timer: Timer)
+    {
+        if audioRecorder.isRecording
+        {
+            let hr = Int((audioRecorder.currentTime / 60) / 60)
+            let min = Int(audioRecorder.currentTime / 60)
+            let sec = Int(audioRecorder.currentTime.truncatingRemainder(dividingBy: 60))
+            let totalTimeString = String(format: "%02d:%02d:%02d", hr, min, sec)
+            lblTimeAudio.text = totalTimeString
+            audioRecorder.updateMeters()
+        }
+    }
+    
+    func finishAudioRecording(success: Bool)
+    {
+        if success
+        {
+            audioRecorder.stop()
+            audioRecorder = nil
+            audioTimer.invalidate()
+            lblTimeAudio.text = "Audio Recorded"
+
+        }
+        else
+        {
+           print("Audio Error")
+        }
+    }
+    
+    func preparePlay()
+    {
+        do
+        {
+            audioPlayer = try AVAudioPlayer(contentsOf: audioPath)
+            audioPlayer.delegate = self
+            audioPlayer.prepareToPlay()
+        }
+        catch{
+            print("Error")
+        }
+    }
+    
+   
 }
 
 
@@ -492,6 +485,7 @@ extension UICollectionView {
     }
     
 }
+
 extension String {
     var isValidURL: Bool {
         let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)

@@ -77,8 +77,8 @@ class TaskTVController: UITableViewController {
         //print(note.noteCurrentDate)
         
         if(task.isCompleted){
-            cell.detailTextLabel?.text = "Completed"
-            cell.detailTextLabel?.textColor = .green
+            cell.detailTextLabel?.text = "Task Done"
+            cell.detailTextLabel?.textColor = .blue
 
         }
         
