@@ -66,6 +66,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         // Do any additional setup after loading the view.
         audioLayout.isHidden = true
         audioViewLayout.isHidden = true
+        btnCancelAudio.isHidden = true
         imgListView.dataSource = self
         imgListView.delegate = self
         initData()
@@ -183,7 +184,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
         
         if(isRecording) {
             finishAudioRecording(success: true)
-            btnRecord.setImage(UIImage(systemName: "circle.fill"), for: .normal)
+            btnRecord.setImage(UIImage(systemName: "stop.circle"), for: .normal)
             btnRecord.tintColor = .systemRed
             btnRecord.setTitle("", for: .normal)
             btnPlay.isEnabled = true
@@ -191,7 +192,7 @@ class AddTaskController: UIViewController, AVAudioRecorderDelegate, AVAudioPlaye
             btnSaveAudio.isEnabled = true
             btnSaveAudio.isHidden = false
         } else {
-            btnRecord.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+            btnRecord.setImage(UIImage(systemName: "stop.circle"), for: .normal)
             btnRecord.tintColor = .black
             
             initAudioData()
