@@ -16,7 +16,7 @@ class CategoryTVController: UITableViewController {
     // create a context to work with core data
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,13 +76,39 @@ class CategoryTVController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "category_cell", for: indexPath)
-        
-        cell.textLabel?.text = categories[indexPath.row].catName
+        let catName = categories[indexPath.row].catName
+        cell.textLabel?.text = catName
         cell.textLabel?.textColor = .black
         cell.detailTextLabel?.textColor = .darkGray
         cell.detailTextLabel?.text = "\(categories[indexPath.row].tasks?.count ?? 0)"
        // cell.imageView?.image = UIImage(systemName: "folder")
         cell.selectionStyle = .none
+        let request: NSFetchRequest<Task> = Task.fetchRequest()
+        let folderPredicate = NSPredicate(format: "category.catName=%@", catName!)
+        
+        request.predicate = folderPredicate
+        
+        var tasks = [Task]()
+        var taskCompleted = 0
+        do {
+            tasks = try context.fetch(request)
+            for task in tasks {
+                if task.isCompleted {
+                    taskCompleted += 1
+                }
+            }
+            if taskCompleted == tasks.count && tasks.count != 0 {
+                cell.imageView?.image = UIImage(systemName: "checkmark.circle.fill")
+                cell.imageView?.tintColor = .green
+            } else {
+                cell.imageView?.image = UIImage(systemName: "folder")
+                cell.imageView?.tintColor = .brown
+            }
+            
+            
+        } catch {
+            print("Error loading tasks \(error.localizedDescription)")
+        }
         
         return cell
     }

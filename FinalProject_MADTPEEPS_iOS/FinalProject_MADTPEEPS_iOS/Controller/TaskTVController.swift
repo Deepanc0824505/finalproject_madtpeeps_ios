@@ -117,7 +117,7 @@ class TaskTVController: UITableViewController {
             self.loadTasks(sortByDate: false, sortByTitle: false)
         }
         
-        let actEdit = UIAlertAction.init(title: "Edit", style: .default) { UIAlertAction in
+        let actEdit = UIAlertAction.init(title: "View and Edit", style: .default) { UIAlertAction in
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "AddTaskController") as! AddTaskController
             vc.task = task
             vc.delegate = self
