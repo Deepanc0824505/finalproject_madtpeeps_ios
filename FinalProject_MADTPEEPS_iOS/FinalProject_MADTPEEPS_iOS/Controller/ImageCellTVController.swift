@@ -25,7 +25,7 @@ class ImageCellTVController: UICollectionViewCell {
     }
     
     func initView() {
-        ivTask.image = UIImage(systemName: "plus")
+        ivTask.image = UIImage(systemName: "plus.rectangle.fill.on.folder.fill")
         ivTask.contentMode = .center
         btnDel.isHidden = true
     }
